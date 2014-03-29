@@ -4,8 +4,8 @@
 action(Str s):
 	if s = "hello":
 		println("Hello World.")
-	elif s = "kod":
-		println("kod rocks.")
+	elif s = "monty":
+		println("monty rocks.")
 	else:
 		println("")
 

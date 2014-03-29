@@ -83,7 +83,7 @@ ExtendedInt(10).times(println) # Prints the iteration number.
 list := ["red", "yellow", "orange"]
 list.each(println(_))
 
-# Sort a list of files by timestamp (<=> is explained in operators.kod):
+# Sort a list of files by timestamp (<=> is explained in operators.monty):
 files := files.sort((a, b) -> a.modified <=> b.modified)
 
 # Use our defined apply() method. This works as Str.reverse(a) is equivalent to

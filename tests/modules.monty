@@ -5,13 +5,13 @@
 # module com.companyName.productName
 
 # Example:
-module org.kod.examples
+module org.monty.examples
 
-import kod.util.*
-import kod.util.{Date, Collection, List}
+import monty.util.*
+import monty.util.{Date, Collection, List}
 
 # Renaming imports.
-import kod.util.{Collection as KodCollection}
+import monty.util.{Collection as KodCollection}
 
-# kod favours programming in British English.
+# Monty favours programming in British English.
 import java.awt.{Color as Colour, Graphics}

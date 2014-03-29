@@ -1,8 +1,8 @@
 grammar:
-	 antlr4 kod.g4 && javac *.java
+	 antlr4 Monty.g4 && javac *.java
 
 run-tests:
 	# Due to a bug in grun, the following does not parse all of the passed files:
-	# grun kod compilationUnit tests/*.kod
+	# grun Monty compilationUnit tests/*.monty
 
-	bash -c 'for file in tests/*.kod; do echo $$file; grun kod compilationUnit $$file; done;'
+	bash -c 'for file in tests/*.monty; do echo $$file; grun Monty compilationUnit $$file; done;'

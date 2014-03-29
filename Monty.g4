@@ -2,7 +2,7 @@
  *  - http://media.pragprog.com/titles/tpantlr2/code/tour/Java.g4
  *  - http://media.pragprog.com/titles/tpantlr2/code/lexmagic/SimplePy.g4
  */
-grammar kod;
+grammar Monty;
 
 @lexer::members {
   private int statementNesting = 0;

@@ -1,4 +1,4 @@
-# The following class is defined internally by kod and used for some type
+# The following class is defined internally by Monty and used for some type
 # classes such as `Enumeration'.
 abstract class Ordering<T>:
 	Int compare(T value)
