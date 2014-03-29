@@ -1,9 +1,9 @@
 # Constructs a list with elements from 2 to 5.
-for i in 2..5:
+for i in [2..5]:
 	print(i)
 
 # Equivalent:
-for i in 2..5: print(i)
+for i in [2..5]: print(i)
 
 # From 1 to 100 in steps of 5.
 for i in [1..100].step(5):
@@ -30,23 +30,5 @@ for (name, age) in users.zip(ages):
 	println("$n: $age")
 
 # Infinite lists and iterators can be zipped as well:
-for (a, b) in [1..].zip(3..):
+for (a, b) in [1..].zip([3..]):
 	println(a, b)
-
-# for..where: Execute the loop body for all iterations where the condition
-# evaluates to True.
-let rate := 50.75
-for r in rates where distance <= r.distance:
-	rate := r.rate
-	break
-
-# for..while: Execute the loop as long as the condition evaluates to True.
-for r in rates while distance <= r.distance:
-	rate := r.rate
-	break
-
-# There is a loop construct that executes its body $x times with $x being an
-# Integer expression.
-let num := 5
-repeat num:
-	println("Iteration $num")

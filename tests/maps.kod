@@ -7,9 +7,6 @@ let names := {
 	1: "Peter Burke"
 }
 
-# Infers the type {Int: Str} which is equivalent to Map<Int, Str>.
-typeOf names = {Int: Str}
-
 # Add one element.
 names.add(2, "Linus Torvalds")
 

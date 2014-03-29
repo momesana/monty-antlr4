@@ -6,9 +6,6 @@ let b := True # Bool
 # Changing the value of a previously declared variable.
 i := 6
 
-# Nullable variables must be explicitly denoted accordingly. See nullable.kod.
-let value2 := None as Str?
-
 # Declaring variables using type inference involves the use of the `let' keyword.
 let i := 5
 let b := True

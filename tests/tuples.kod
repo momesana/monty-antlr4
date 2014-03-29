@@ -42,9 +42,9 @@ list[0].address
 # Extract a tuple.
 let tuple := ("a", 1, True)
 let (a, b, c) := tuple
-assert a = 1
-assert b = True
-assert c = "a"
+a = 1
+b = True
+c = "a"
 
 # Extract a tuple partially.
 let tuple := ("a", 1, True)

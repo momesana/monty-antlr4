@@ -1,7 +1,3 @@
-object Main:
-	fn error(i):
-		i = 42 or raise InvalidArgumentException("i must be 42.")
-
 try:
 	Main.error(41)
 catch InvalidArgumentException e:

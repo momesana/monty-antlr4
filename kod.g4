@@ -120,32 +120,7 @@ statements
 
 declaration
   : classDeclaration
-  | objectDeclaration
-  | enumDeclaration
-  | traitDeclaration
-  | typeDeclaration
   | functionDeclaration
-  ;
-
-typeDeclaration
-  : 'type' Identifier Identifier? 'is' type codeBlock?
-  ;
-
-enumDeclaration
-  : 'enum' Identifier 'is' (expression | enumMap)
-  ;
-
-traitDeclaration
-  : 'trait' Identifier typeParameters? ('extends' type)?
-    (':' separator Indent initialMemberDeclaration* memberDeclaration* Dedent)?
-  ;
-
-objectDeclaration
-  : 'object' Identifier
-    ('extends' type
-      ('(' variableOrInitialiser (',' variableOrInitialiser)* ')')?
-    )?
-    (':' separator Indent initialMemberDeclaration* memberDeclaration* Dedent)?
   ;
 
 classDeclaration
@@ -155,7 +130,6 @@ classDeclaration
     ('extends' type
       ('(' variableOrInitialiser (',' variableOrInitialiser)* ')')?
     )?
-    ('with' type (',' type)*)?
     (':' separator Indent initialMemberDeclaration* memberDeclaration* Dedent)?
   ;
 
@@ -167,7 +141,7 @@ accessLevel
 
 initialMemberDeclaration
   /* Declaration of a new member variable. */
-  : accessLevel? 'read'? variableDeclaration separator+
+  : accessLevel? variableDeclaration separator+
 
   /* Class construction statement. */
   | statement separator+
@@ -182,26 +156,13 @@ memberDeclaration
   | separator+
   ;
 
-/* Declare require and ensure for contracts. */
-require
-  : 'require:' separator Indent (statement? separator)* Dedent
-  ;
-
-ensure
-  : 'ensure:' separator Indent (statement? separator)* Dedent
-  ;
-
 methodDeclaration
   : 'override'? functionDeclaration
   ;
 
-decorator
-  : '@' Identifier ('(' expressionList? ')')? separator+
-  ;
-
 /* self denotes an alternative constructor. */
 functionDeclaration
-  : decorator* 'fn' typeParameters? type? (Identifier | 'self')
+  : typeParameters? type? (Identifier | 'self')
     '(' (parameterDeclaration (',' parameterDeclaration)*)? ')'
     codeBlock?
   ;
@@ -240,7 +201,7 @@ Semicolon
   ;
 
 typeParameter
-  : ('+' | '-')? type ('extends' type)?
+  : type
   ;
 
 typeParameters
@@ -256,46 +217,30 @@ variableDeclaration
 
 codeBlock
   : ':' statementBlock
-  | '=' expressionBlock
   ;
 
 statementBlock
   : separator*
     Indent
-      require?
       separator*
-      ensure?
       (statement? separator)*
     Dedent
   | statement
-  ;
-
-expressionBlock
-  : separator*
-    Indent
-      separator*
-      expression
-      separator*
-    Dedent
-  | expression
   ;
 
 statement
   /* NOP statement needed due to indentation. */
   : 'pass'
 
-  /* Assertions. */
-  | 'assert' expression
-
   /* for loop: The expression must be a range, list, iterator or generator. */
-  | 'for' untypedParameters 'in' expression (('where' | 'while') expression)? ':' statementBlock
+  | 'for' untypedParameters 'in' expression ':' statementBlock
 
   /* while loop: The expression must be a condition (i.e. Boolean expression). */
   | 'while' expression ':' statementBlock
 
   /* If statement. */
   | 'if' expression ':' statementBlock
-    (separator* 'else' expression ':' statementBlock)*
+    (separator* 'elif' expression ':' statementBlock)*
     (separator* 'else:' statementBlock)?
 
   /* Try statement. */
@@ -303,23 +248,11 @@ statement
     (separator* 'catch' (type Identifier?)? ':' statementBlock)+
     (separator* 'finally:' statementBlock)?
 
-  /* Match statement. */
-  | 'match' expression ':'
-    separator+ Indent (matchCase | separator)* Dedent
-
-  /* repeat loop: The expression must be an Integer expression. If the expression
-   * is omitted, this equals an endless loop.
-   */
-  | 'repeat' expression? ':' statementBlock
-
   /* Local variable declaration. */
   | variableDeclaration
 
   /* Value assignment. */
   | expression ':=' expression
-
-  /* Short-cirucit expression. The LHS must evaluate to a Boolean value. */
-  | expression 'or' controlStatement
 
   /* Some expression. */
   | expression
@@ -336,9 +269,6 @@ controlStatement
 
   /* Throws an exception. */
   | 'raise' expression
-
-  /* In generators this returns the given value to the callee. */
-  | 'yield' expression
 
   /* Loop control statements; skip is called `continue' in other languages. */
   | ('skip' | 'break')
@@ -357,21 +287,15 @@ type
   /* Tuple. */
   | '(' type (',' type)+ ')'
 
-  /* Nullable type. */
-  | type '?'
-
   /* Class name, instantiating the type parameters. */
   | Identifier typeParameters?
 
   /* Member access. */
   | type ('.' type)+
-
-  /* Return type for methods that do not return anything. */
-  | 'Void'
   ;
 
 list
-  : '[' expressionList? ']'
+  : '[' (expressionList? | expression '..' expression?) ']'
   ;
 
 /* Tuple have at least two elements. */
@@ -397,17 +321,6 @@ mapItem
   : literal ':' expression
   ;
 
-/* Map for enumerations. */
-enumMap
-  : '{' enumMapItemList '}'
-  ;
-enumMapItemList
-  : enumMapItem (',' enumMapItem)*
-  ;
-enumMapItem
-  : Identifier ('=' literal)?
-  ;
-
 arguments
   : '(' expressionList? ')'
   ;
@@ -421,25 +334,21 @@ expression
   | map
   | 'self'
   | (Identifier | type) arguments
-  | expression ('.' | '?.') Identifier arguments?
-  | expression '?' expression ':' expression
-  | expression '=>' expression /* Implication. */
+  | expression '.' Identifier arguments?
+  | expression 'if' expression 'else' expression
   | expression '[' expression ']'
 
   /* Unary expressions */
   | '-' expression
   | 'not' expression
-  | 'typeOf' expression
 
   /* Binary overloadable expressions */
   | expression ('*' | '/' | 'mod') expression
   | expression ('+' | '-') expression /* + for appending, adding. */
-  | expression ':' expression /* Prepending. */
   | expression ('<=' | '>=' | '<' | '>') expression
   | expression 'and' expression
   | expression 'or' expression
   | expression 'xor' expression
-  | expression 'nor' expression
   | expression
     ('='<assoc=right>   /* Value equality. */
     |'/='<assoc=right>  /* Value inequality. */
@@ -448,12 +357,9 @@ expression
     expression
 
   /* Binary non-overloadable expressions */
-  | expression '$' expression /* String interpolation. */
-  | expression '?:' (expression | controlStatement) /* Elvis operator; expression must be nullable. */
   | expression 'in' expression
   | expression 'is' expression
   | expression 'as' expression
-  | expression '..' expression?
   | expression
     ('=='<assoc=right>   /* Address equality. */
     |'/=='<assoc=right>) /* Address inequality. */
@@ -461,7 +367,6 @@ expression
 
   /* Other expressions. */
   | untypedParameters '->' (expression | statementBlock) /* Lambda expression. */
-  | '[' expression 'for' untypedParameters 'in' expression ('if' expression)? ']' /* List comprehension */
   | '(' expression ')'
   ;
 
@@ -470,22 +375,6 @@ untypedParameters
   : Identifier
   | '_'
   | '(' (untypedParameters (',' untypedParameters)*)? ')'
-  ;
-
-typedTuple
-  : type Identifier?
-  | '(' typedTuple (',' typedTuple)* ')'
-  ;
-
-matchAtom
-  : typedTuple Identifier?
-  | expression Identifier?
-  ;
-
-matchCase
-  : 'is' matchAtom ':' statementBlock
-  | 'in' list Identifier? ':' statementBlock
-  | 'or:' statementBlock
   ;
 
 expressionList
@@ -561,7 +450,7 @@ CharacterLiteral
   ;
 
 StringLiteral
-  : '"' (StringEscapeSequence | ~('\\' | '"'))* '"'
+  : 'raw'? '"' (StringEscapeSequence | ~('\\' | '"'))* '"'
   ;
 
 fragment CharacterEscapeSequence
